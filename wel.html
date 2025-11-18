@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome Page</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+
+  background-image: url(../welcom/images.jpg);
+  background-size: 400% 400%;
+  animation: gradientMove 30s infinite alternate ease-in-out;
+
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;       /* IMPORTANT: makes top text show above */
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.top-title {
+  text-align: center;
+  margin-bottom: 40px;          /* space between top title & welcome text */
+}
+
+.top-title h1 {
+  font-size: 3.5rem;
+  color: #07b2e6;
+  border-style: dashed;
+  border-color: rgb(14, 236, 25);
+  background-color: darkgreen;
+}
+
+/* Welcome container */
+.welcome-container {
+  text-align: center;
+  color: #d60caa;
+  border-style:double;
+  border-color: rgb(202, 214, 24);
+  background-color:aquamarine;
+  border-radius: 50PX;
+border-width: 40px;
+
+}
+
+/* Heading animation */
+#welcomeText {
+  font-size: 3rem;
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+}
+
+/* Glowing bouncing arrow */
+.arrow {
+  font-size: 6rem;
+  margin-top: 25px;
+  opacity: 0;
+  animation: fadeIn 2s 1s forwards, bounce 0.5s infinite 1s;
+  color: rgb(236, 5, 5);
+  text-shadow: 0 0 15px #e60505,
+               0 0 30px #da0813,
+               0 0 45px #ac070f;
+}
+
+/* Button */
+#startBtn {
+  display: inline-block;
+  text-decoration: none;
+  margin-top: 25px;
+  padding: 14px 35px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(45deg, #00aaff, #0066ff);
+  box-shadow: 0 4px 15px rgba(0, 140, 255, 0.4);
+  transition: 0.3s ease;
+  border: none;
+}
+
+#startBtn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 20px rgba(208, 255, 0, 0.7);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(14px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+  </style>
+</head>
+<body>
+
+  <!-- ⭐ Top Title (Now ABOVE welcome text) -->
+  <div class="top-title">
+    <h1>This are the Gondar City Website </h1>
+  </div>
+
+  <!-- Welcome Section -->
+  <div class="welcome-container">
+    <h1 id="welcomeText">Welcome to this website</h1>
+
+    <div class="arrow">⬇</div>
+
+    <button id="startBtn">Enter</button>
+  </div>
+
+<script>
+document.getElementById("startBtn").addEventListener("click", () => {
+  window.location.href = "homegondar.html";
+});
+</script>
+
+</body>
+</html>

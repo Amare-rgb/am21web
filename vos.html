@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microphone Voice Reader</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background:lightskyblue;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0077cc;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    header select, header button {
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+    }
+
+    header select {
+      background: white;
+      color: #333;
+    }
+
+    header button {
+      background: white;
+      color: #0077cc;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: background 0.3s;
+    }
+
+    header button:hover {
+      background: #e1e1e1;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .left-panel, .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background:aquamarine;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      resize: none;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .tts-section {
+      margin-top: 15px;
+    }
+
+    .tts-section select, 
+    .tts-section input[type=range] {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .read-btn {
+      background: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    .read-btn:hover {
+      background: #005fa3;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #f0f0f0;
+      font-size: 14px;
+    }
+
+    /* Add spacing for bottom controls in transcript panel */
+    .bottom-controls {
+      margin-top: 15px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <!-- Left Top: Recognition Language -->
+    <div class="language-select">
+      <label for="language">Recognition Language:</label>
+      <select id="language">
+        <option value="en-US">English (US)</option>
+        <option value="en-GB">Amharic  (Ethiopia)</option>
+        <option value="es-ES">Spanish (Spain)</option>
+        <option value="fr-FR">France (France)</option>
+        <option value="de-DE">German (Germany)</option>
+      </select>
+    </div>
+
+    <!-- Right Top: Buttons -->
+    <div class="controls">
+      <button id="startBtn">🎤 Start</button>
+      <button id="stopBtn">🛑 Stop</button>
+      <button id="clearBtn">🧹 Clear</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Center Left: Transcript -->
+    <div class="left-panel">
+      <h2>Transcript / Editable Text</h2>
+      <textarea id="transcript" placeholder="Your recognized speech will appear here..."></textarea>
+
+      <!-- Bottom of Transcript: Rate, Pitch, and Read Aloud -->
+      <div class="bottom-controls">
+        <label for="rate">Rate:</label>
+        <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
+
+        <label for="pitch">Pitch:</label>
+        <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
+
+        <button class="read-btn" id="readBtn">🔊 Read Aloud</button>
+      </div>
+    </div>
+
+    <!-- Center Right: Detected Voices -->
+    <div class="right-panel">
+      <h2>Detected Voices (TTS)</h2>
+      <div class="tts-section">
+        <label for="voiceSelect"> Choose the Voice:</label>
+        <select id="voiceSelect"></select>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Microphone Voice Reader — Built with HTML, CSS, and JavaScript
+  </footer>
+
+  <script>
+    // --- Speech Recognition Setup ---
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const transcriptArea = document.getElementById('transcript');
+    const languageSelect = document.getElementById('language');
+
+    let recognition;
+    let recognizing = false;
+
+    if ('webkitSpeechRecognition' in window) {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = transcriptArea.value;
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        transcriptArea.value = finalTranscript + interimTranscript;
+      };
+
+      recognition.onend = () => {
+        recognizing = false;
+      };
+
+      startBtn.onclick = () => {
+        if (!recognizing) {
+          recognition.lang = languageSelect.value;
+          recognition.start();
+          recognizing = true;
+        }
+      };
+
+      stopBtn.onclick = () => {
+        recognition.stop();
+        recognizing = false;
+      };
+
+      clearBtn.onclick = () => {
+        transcriptArea.value = '';
+      };
+    } else {
+      alert('Your browser does not support Speech Recognition. Try using Chrome.');
+    }
+
+    // --- Speech Synthesis (TTS) Setup ---
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rate = document.getElementById('rate');
+    const pitch = document.getElementById('pitch');
+    const readBtn = document.getElementById('readBtn');
+    let voices = [];
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach((voice, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    readBtn.onclick = () => {
+      const text = transcriptArea.value.trim();
+      if (!text) return alert('No text to read!');
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedVoice = voices[voiceSelect.value];
+      if (selectedVoice) utterance.voice = selectedVoice;
+      utterance.rate = rate.value;
+      utterance.pitch = pitch.value;
+      speechSynthesis.speak(utterance);
+    };
+  </script>
+
+</body>
+</html>
